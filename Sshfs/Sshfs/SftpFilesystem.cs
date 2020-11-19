@@ -344,9 +344,9 @@ namespace Sshfs
 
         #region DokanOperations
 
-        NtStatus IDokanOperations.CreateFile(string fileName, FileAccess access, FileShare share,
+        public NtStatus CreateFile(string fileName, FileAccess access, FileShare share,
                                                FileMode mode, FileOptions options,
-                                               FileAttributes attributes, DokanFileInfo info)
+                                               FileAttributes attributes, IDokanFileInfo info)
         {
             //Split into four methods?
 #if DEBUG
@@ -523,7 +523,7 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        private NtStatus OpenDirectory(string fileName, DokanFileInfo info)
+        private NtStatus OpenDirectory(string fileName, IDokanFileInfo info)
         {
 #if DEBUG
             string processName = Process.GetProcessById(info.ProcessId).ProcessName;
@@ -578,7 +578,7 @@ namespace Sshfs
             return NtStatus.ObjectNameNotFound;
         }
 
-        private NtStatus CreateDirectory(string fileName, DokanFileInfo info)
+        private NtStatus CreateDirectory(string fileName, IDokanFileInfo info)
         {
             LogFSActionInit("OpenDir", fileName, (SftpContext)info.Context, "");
 
@@ -602,7 +602,7 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        void IDokanOperations.Cleanup(string fileName, DokanFileInfo info)
+        public void Cleanup(string fileName, IDokanFileInfo info)
         {
             LogFSActionInit("Cleanup", fileName, (SftpContext)info.Context, "");
 
@@ -667,7 +667,7 @@ namespace Sshfs
             LogFSActionSuccess("Cleanup", fileName, (SftpContext)info.Context, "");
         }
 
-        void IDokanOperations.CloseFile(string fileName, DokanFileInfo info)
+        public void CloseFile(string fileName, IDokanFileInfo info)
         {
             LogFSActionInit("CloseFile", fileName, (SftpContext)info.Context, "");
             
@@ -690,8 +690,8 @@ namespace Sshfs
         }
 
 
-        NtStatus IDokanOperations.ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset,
-                                             DokanFileInfo info)
+        public NtStatus ReadFile(string fileName, byte[] buffer, out int bytesRead, long offset,
+                                             IDokanFileInfo info)
         {
             LogFSActionInit("ReadFile", fileName, (SftpContext)info.Context, "BuffLen:{0} Offset:{1}", buffer.Length, offset);
 
@@ -749,8 +749,8 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset,
-                                              DokanFileInfo info)
+        public NtStatus WriteFile(string fileName, byte[] buffer, out int bytesWritten, long offset,
+                                              IDokanFileInfo info)
         {
             bytesWritten = 0;
             LogFSActionInit("WriteFile", fileName, (SftpContext)info.Context, "Ofs:{0} Len:{1}", offset, buffer.Length);
@@ -804,7 +804,7 @@ namespace Sshfs
         }
         
 
-        NtStatus IDokanOperations.FlushFileBuffers(string fileName, DokanFileInfo info)
+        public NtStatus FlushFileBuffers(string fileName, IDokanFileInfo info)
         {
             LogFSActionInit("FlushFile", fileName, (SftpContext)info.Context,"");
 
@@ -816,8 +816,8 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.GetFileInformation(string fileName, out FileInformation fileInfo,
-                                                       DokanFileInfo info)
+        public NtStatus GetFileInformation(string fileName, out FileInformation fileInfo,
+                                                       IDokanFileInfo info)
         {
             LogFSActionInit("FileInfo", fileName, (SftpContext)info.Context, "");
 
@@ -916,13 +916,13 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, DokanFileInfo info)
+        public NtStatus FindFilesWithPattern(string fileName, string searchPattern, out IList<FileInformation> files, IDokanFileInfo info)
         {
             files = null;
             return NtStatus.NotImplemented;
         }
 
-        NtStatus IDokanOperations.FindFiles(string fileName, out IList<FileInformation> files, DokanFileInfo info)
+        public NtStatus FindFiles(string fileName, out IList<FileInformation> files, IDokanFileInfo info)
         {
             //Log("FindFiles:{0}", fileName);
             LogFSActionInit("FindFiles", fileName, (SftpContext)info.Context, "");
@@ -1056,7 +1056,7 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.SetFileAttributes(string fileName, FileAttributes attributes, DokanFileInfo info)
+        public NtStatus SetFileAttributes(string fileName, FileAttributes attributes, IDokanFileInfo info)
         {
             LogFSActionError("SetFileAttr", fileName, (SftpContext)info.Context, "Attrs:{0}", attributes);
 
@@ -1123,8 +1123,8 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime,
-                                                DateTime? lastWriteTime, DokanFileInfo info)
+        public NtStatus SetFileTime(string fileName, DateTime? creationTime, DateTime? lastAccessTime,
+                                                DateTime? lastWriteTime, IDokanFileInfo info)
         {
             //Log("TrySetFileTime:{0}\n|c:{1}\n|a:{2}\n|w:{3}", filename, creationTime, lastAccessTime,lastWriteTime);
             LogFSActionInit("SetFileTime", fileName, (SftpContext)info.Context, "");
@@ -1150,7 +1150,7 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.DeleteFile(string fileName, DokanFileInfo info)
+        public NtStatus DeleteFile(string fileName, IDokanFileInfo info)
         {
             //Log("DeleteFile:{0}", fileName);
             LogFSActionInit("DeleteFile", fileName, (SftpContext)info.Context, "");
@@ -1189,7 +1189,7 @@ namespace Sshfs
                     : NtStatus.AccessDenied;
         }
 
-        NtStatus IDokanOperations.DeleteDirectory(string fileName, DokanFileInfo info)
+        public NtStatus DeleteDirectory(string fileName, IDokanFileInfo info)
         {
             //Log("DeleteDirectory:{0}", fileName);
             LogFSActionSuccess("DeleteDir", fileName, (SftpContext)info.Context, "");
@@ -1275,7 +1275,7 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.MoveFile(string oldName, string newName, bool replace, DokanFileInfo info)
+        public NtStatus MoveFile(string oldName, string newName, bool replace, IDokanFileInfo info)
         {
             LogFSActionInit("MoveFile", oldName, (SftpContext)info.Context, "To:{0} Replace:{1}",newName, replace);
 
@@ -1401,7 +1401,7 @@ namespace Sshfs
             return NtStatus.ObjectNameCollision;
         }
 
-        NtStatus IDokanOperations.SetEndOfFile(string fileName, long length, DokanFileInfo info)
+        public NtStatus SetEndOfFile(string fileName, long length, IDokanFileInfo info)
         {
             //Log("SetEnd");
             LogFSActionInit("SetEndOfFile", fileName, (SftpContext)info.Context, "Length:{0}", length);
@@ -1411,7 +1411,7 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.SetAllocationSize(string fileName, long length, DokanFileInfo info)
+        public NtStatus SetAllocationSize(string fileName, long length, IDokanFileInfo info)
         {
             //Log("SetSize");
             LogFSActionInit("SetAllocSize", fileName, (SftpContext)info.Context, "Length:{0}", length);
@@ -1421,20 +1421,20 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.LockFile(string fileName, long offset, long length, DokanFileInfo info)
+        public NtStatus LockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             LogFSActionError("LockFile", fileName, (SftpContext)info.Context, "NI");
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.UnlockFile(string fileName, long offset, long length, DokanFileInfo info)
+        public NtStatus UnlockFile(string fileName, long offset, long length, IDokanFileInfo info)
         {
             LogFSActionError("UnlockFile", fileName, (SftpContext)info.Context, "NI");
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.GetDiskFreeSpace(out long free, out long total,
-                                                     out long used, DokanFileInfo info)
+        public NtStatus GetDiskFreeSpace(out long free, out long total,
+                                                     out long used, IDokanFileInfo info)
         {
             //Log("GetDiskFreeSpace");
             LogFSActionInit("GetDiskFreeSpace", this._volumeLabel, (SftpContext)info.Context, "");
@@ -1496,14 +1496,16 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.GetVolumeInformation(out string volumeLabel, out FileSystemFeatures features,
-                                                         out string filesystemName, DokanFileInfo info)
+        public NtStatus GetVolumeInformation(out string volumeLabel, out FileSystemFeatures features,
+                                                         out string filesystemName, out uint maximumComponentLength, IDokanFileInfo info)
         {
             LogFSActionInit("GetVolumeInformation", this._volumeLabel, (SftpContext)info.Context, "");
 
             volumeLabel = _volumeLabel;
 
             filesystemName = "SSHFS";
+
+            maximumComponentLength = 255;
 
             features = FileSystemFeatures.CasePreservedNames | FileSystemFeatures.CaseSensitiveSearch |
                        FileSystemFeatures.SupportsRemoteStorage | FileSystemFeatures.UnicodeOnDisk | FileSystemFeatures.SequentialWriteOnce;
@@ -1513,8 +1515,8 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.GetFileSecurity(string filename, out FileSystemSecurity security,
-                                                    AccessControlSections sections, DokanFileInfo info)
+        public NtStatus GetFileSecurity(string filename, out FileSystemSecurity security,
+                                                    AccessControlSections sections, IDokanFileInfo info)
         {
             LogFSActionInit("GetFileSecurity", filename, (SftpContext)info.Context, "Sections:{0}",sections);
 
@@ -1550,32 +1552,33 @@ namespace Sshfs
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.SetFileSecurity(string filename, FileSystemSecurity security,
-                                                    AccessControlSections sections, DokanFileInfo info)
+        public NtStatus SetFileSecurity(string filename, FileSystemSecurity security,
+                                                    AccessControlSections sections, IDokanFileInfo info)
         {
             LogFSActionError("SetFileSecurity", filename, (SftpContext)info.Context, "NI");
 
             return NtStatus.AccessDenied;
         }
 
-        NtStatus IDokanOperations.Unmounted(DokanFileInfo info)
+        public NtStatus Unmounted(IDokanFileInfo info)
         {
             LogFSActionError("Unmounted", this._volumeLabel, (SftpContext)info.Context, "NI");
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.Mounted(DokanFileInfo info)
+        public NtStatus Mounted(IDokanFileInfo info)
         {
             LogFSActionError("Mounted", this._volumeLabel, (SftpContext)info.Context, "NI");
             return NtStatus.Success;
         }
 
-        NtStatus IDokanOperations.FindStreams(string fileName, out IList<FileInformation> streams, DokanFileInfo info)
+        public NtStatus FindStreams(string fileName, out IList<FileInformation> streams, IDokanFileInfo info)
         {
             //Alternate Data Streams are NFTS-only feature, no need to handle
             streams = new FileInformation[0];
             return NtStatus.NotImplemented;
         }
+
 
         #endregion
 
